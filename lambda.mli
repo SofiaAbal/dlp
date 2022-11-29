@@ -3,6 +3,8 @@ type ty =
     TyBool
   | TyNat
   | TyArr of ty * ty
+  | TyTuple of ty list
+  | TyRecord of (string * ty) list
 ;;
 
 type 'a context =
@@ -22,6 +24,9 @@ type term =
   | TmApp of term * term
   | TmLetIn of string * term * term
   | TmFix of term
+  | TmTuple of term list
+  | TmRecord of (string * term) list
+  | TmProj of term * string
 ;;
 
 type command =
