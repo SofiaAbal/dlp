@@ -16,28 +16,26 @@ let rec read_multi_lines () =
 
 let top_level_loop () =
   print_endline "   Lambda calculus Interpreter version 1.0\n";
-  let rec loop ctx =
+  let rec loop (vctx, tctx) =
     print_string ">> ";
     flush stdout;
     try
-      let tm = s token (from_string (read_multi_lines ())) in
-      let tyTm = typeof ctx tm in
-      print_endline (string_of_term (eval tm) ^ " : " ^ string_of_ty tyTm);
-      loop ctx
+      let c = s token (from_string (read_multi_lines ())) in
+      loop (execute (vctx, tctx) c)
     with
        Lexical_error ->
          print_endline "lexical error";
-         loop ctx
+         loop (vctx, tctx)
      | Parse_error ->
          print_endline "syntax error";
-         loop ctx
+         loop (vctx, tctx)
      | Type_error e ->
          print_endline ("type error: " ^ e);
-         loop ctx
+         loop (vctx, tctx)
      | End_of_file ->
          print_endline "\n...closing interpreter\nBye!"
   in
-    loop emptyctx
+    loop (emptyctx, emptyctx)
   ;;
 
 top_level_loop ()
