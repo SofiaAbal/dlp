@@ -398,7 +398,7 @@ let execute (vctx, tctx) = function
   Eval tm ->
     let tyTm = typeof tctx tm in
     let tm' = eval vctx tm in
-    print_endline ("- : " ^ string_of_ty tyTm ^ " = " ^ string_of_term tm')
+    print_endline ("- : " ^ string_of_ty tyTm ^ " = " ^ string_of_term tm');
     (vctx, tctx)
   | Bind (s, tm) ->
     let tyTm = typeof tctx tm in
