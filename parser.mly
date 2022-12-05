@@ -20,6 +20,11 @@
 
 %token LPAREN
 %token RPAREN
+%token LCURLY
+%token RCURLY
+%token COMMA
+%token FSTPROJ
+%token SNDPROJ
 %token DOT
 %token EQ
 %token COLON
@@ -53,24 +58,23 @@ term :
       { TmLetIn ($2, TmFix (TmAbs ($2, $4, $6)), $8) }
 
 appTerm :
-    pathTerm
+    atomicTerm
       { $1 }
-  | SUCC pathTerm
+  | SUCC atomicTerm
       { TmSucc $2 }
-  | PRED pathTerm
+  | PRED atomicTerm
       { TmPred $2 }
-  | ISZERO pathTerm
+  | ISZERO atomicTerm
       { TmIsZero $2 }
-  | appTerm pathTerm
+  | appTerm atomicTerm
       { TmApp ($1, $2) }
+  | LPAREN term COMMA term RPAREN
+      { TmPair ($2, $4)}
+  | appTerm FSTPROJ
+      { TmPairFstProj $1 }
+  | appTerm SNDPROJ
+      { TmPairSndProj $1 }
 
-pathTerm :
-  pathTerm DOT STRINGV
-    { TmProj ($1, $3) }
-  | pathTerm DOT INTV 
-    { TmProj ($1, string_of_int $3) }
-  | atomicTerm
-    { $1 }
 
 atomicTerm :
     LPAREN term RPAREN
@@ -86,30 +90,6 @@ atomicTerm :
             0 -> TmZero
           | n -> TmSucc (f (n-1))
         in f $1 }
-  | LCURLY tupleFields RCURLY
-    { TmTuple $2}
-  | LCURLY recordFields RCURLY
-    { TmTuple $2}
-
-tupleFields : 
-  term 
-    {[$1]}
-    | term COMMA tupleFields
-      {$1 :: $3}
-
-recordFields : 
-  /* Empty*/
-   {[]}
-  | notEmptyRecordFields
-    {$1}
-
-notEmptyRecordFields : 
-  notEmptyRecordFieldType
-    {[$1]}
-  | notEmptyRecordFieldType COMMA notEmptyRecordFieldType
-    {$1 :: $3}
-
-
 
 ty :
     atomicTy
@@ -124,8 +104,3 @@ atomicTy :
       { TyBool }
   | NAT
       { TyNat }
-  | LCURLY tupleFieldTypes RCURLY
-    { TyTuple $2}
-  | LCURLY recordFieldTypes RCURLY
-    { TyRecord $2}
-

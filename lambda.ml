@@ -5,6 +5,7 @@ type ty =
     TyBool
   | TyNat
   | TyArr of ty * ty
+  | TyPair of ty * ty
 ;;
 
 type 'a context =
@@ -24,6 +25,9 @@ type term =
   | TmApp of term * term
   | TmLetIn of string * term * term
   | TmFix of term (* just one parameter, just like lambda.mli *)
+  | TmPair of term * term
+  | TmPairFstProj of term
+  | TmPairSndProj of term
 ;;
 
 type command = 
@@ -55,6 +59,8 @@ let rec string_of_ty ty = match ty with
       "Nat"
   | TyArr (ty1, ty2) ->
       "(" ^ string_of_ty ty1 ^ ")" ^ " -> " ^ "(" ^ string_of_ty ty2 ^ ")"
+  | TyPair (ty1, ty2) ->
+      "(" ^ string_of_ty ty1 ^ ", " ^ string_of_ty ty2 ^ ")"
 ;;
 
 exception Type_error of string
@@ -134,21 +140,18 @@ let rec typeof ctx tm = match tm with
       | _ -> raise (Type_error "arroy type expected")
     )
 
-  | TmTuple fields -> 
-      TyTuple (List.map (fun t -> typeof ctx t) fields)
-  | TmRecord fields -> 
-      TyRecord (List.map (fun (s,t) -> (s typeof ctx t)) fields)
+    (* T-Pair *)
+  | TmPair (t1, t2) ->
+      TyPair(typeof ctx t1, typeof ctx t2)
 
-  | TmProj (t, s) -> 
-    (match typeof ctx t with
-      TyRecord fieldtys ->
-        (try List.assoc s fieldtys with
-          Not_found -> raise (Type_error ("label " ^ s ^ " not found")))
-      | TyTuple fieldtys -> 
-        (try List.nth fieldtys (int_of_string s - 1)) with 
-          _ ->
+    (* T-Proj1 *)
+  | TmPairFstProj t1 -> 
+      typeof ctx t1
 
-
+    (* T-Proj2 *)
+  | TmPairSndProj t2 -> 
+      typeof ctx t2
+    
 ;;
 
 
@@ -185,6 +188,12 @@ let rec string_of_term = function
       "let " ^ s ^ " = " ^ string_of_term t1 ^ " in " ^ string_of_term t2
   | TmFix t -> 
       "(fix" ^ string_of_term t ^ ")"
+  | TmPair (t1, t2) -> 
+      "(" ^ string_of_term t1 ^ ", " ^ string_of_term t2 ^ ")"
+  | TmPairFstProj t1 ->
+      string_of_term t1 ^ ".1"
+  | TmPairSndProj t2 ->
+      string_of_term t2 ^ ".2"
 ;;
 
 let rec ldif l1 l2 = match l1 with
@@ -222,8 +231,12 @@ let rec free_vars tm = match tm with
       lunion (ldif (free_vars t2) [s]) (free_vars t1)
   | TmFix t ->
       free_vars t
-  | TmTuple fields -> 
-      List.fold_left (fun fv ti -> lunion (free_vars ti) fv) [] fields
+  | TmPair (t1, t2) -> 
+      lunion (free_vars t1) (free_vars t2)
+  | TmPairFstProj t1 ->
+      free_vars t1
+  | TmPairSndProj t2 ->
+      free_vars t2
 ;;
 
 let rec fresh_name x l =
@@ -265,9 +278,12 @@ let rec subst x s tm = match tm with
                 TmLetIn (z, subst x s t1, subst x s (subst y (TmVar z) t2))
   | TmFix t ->
       TmFix (subst x s t)
-  | TmTuple fields ->
-    TmTuple (List.map (fun t1 -> subst x s ti) fields)
-  | TmRecord fields -> 
+  | TmPair (t1, t2) ->
+      TmPair (subst x s t1, subst x s t2)
+  | TmPairFstProj t1 ->
+      TmPairFstProj (subst x s t1)
+  | TmPairSndProj t2 ->
+      TmPairSndProj (subst x s t2)
 ;;
 
 let rec isnumericval tm = match tm with
@@ -280,8 +296,8 @@ let rec isval tm = match tm with
     TmTrue  -> true
   | TmFalse -> true
   | TmAbs _ -> true
-  | TmTuple field .> List.for_all (fun ti -> isval ti) fields
   | t when isnumericval t -> true
+  | TmPair (a, b) when ((isval a) && (isval b)) -> true
   | _ -> false
 ;;
 
@@ -368,80 +384,35 @@ let rec eval1 vctx tm = match tm with
   | TmVar s ->
       getbinding vctx s
 
-    (* E-Tuple*)
-  | TmTuple fields -> 
-    let rec evalafield = function
-      [] -> raise NotRuleApplies
-      | vi::rest when isval vi -> 
-        let rest' = evalafield rest in
-          vi::rest'
-      | ti::rest -> 
-        let ti' = eval1 ctx ti in 
-        ti'::rest
-    in
-    let fields' = evalafield fields in 
-    TmTuple fields'
+    (* E-PairBeta1*)
+  | TmPairFstProj (TmPair (t1, t2)) when isval t1 ->
+    (try fst (t1, t2) with
+    _ -> raise NoRuleApplies)
 
-    | TmRecord fields -> 
-    let rec evalafield = function
-      [] -> raise NotRuleApplies
-      | (lb, vi)::rest when isval vi -> 
-        let rest' = evalafield rest in
-          (lb, vi)::rest'
-      | (lb, ti)::rest -> 
-        let ti' = eval1 ctx ti in 
-        (lb, ti')::rest
-    in
-    let fields' = evalafield fields in 
-    TmRecord fields'
+  (* E-PairBeta2*)
+  | TmPairSndProj (TmPair (t1, t2)) when isval t2 ->
+    (try snd (t1, t2) with
+    _ -> raise NoRuleApplies)
 
+    (* E-Proj1 *)
+  | TmPairFstProj t1 ->
+      TmPairFstProj (eval1 vctx t1)
 
-  | TmProj (TmTuple field as v1, lb) when isval v1 -> 
-    (try List.nth fields (int_of_string lb - 1) with
-    _ -> raise NotRuleApplies)
+    (* E-Proj2 *)
+  | TmPairSndProj t2 ->
+      TmPairSndProj (eval1 vctx t2)
 
-  | TmProj (TmTuple field as v1, lb) when isval v1 -> 
-    (try List.assoc lb fields with
-    _ -> raise NotRuleApplies)
+  (* E-Pair2 *)
+  | TmPair (v1, t2) when isval v1 ->
+      TmPair (v1, eval1 vctx t2)
 
-  | TmProj (t1, lb) -> 
-    let t1' = eval1 ctx t1 in 
+    (* E-Pair1 *)
+  | TmPair (t1, t2) ->
+      TmPair (eval1 vctx t1, t2)
 
   | _ ->
       raise NoRuleApplies
 ;;
-
-(*
-let apply_ctx_old vctx tm = 
-  let rec aux vl = function
-    TmTrue -> 
-      TmTrue
-    | TmFalse -> 
-      TmFalse
-    | TmIf (t1, t2, t3) ->
-      TmIf (aux vl t1, aux vl t2, aux vl t3)
-    | TmZero -> 
-      TmZero
-    | TmSucc t ->
-      TmSucc (aux vl t)
-    | TmPred t ->
-      TmPred (aux vl t)
-    | TmIsZero t ->
-      TmIsZero (aux vl t)
-    | TmVar s ->
-      if List.mem s vl then TmVar s else getbinding vctx s
-    | TmAbs (s, t, t1) ->
-      TmAbs (s, t, aux (s::vl) t1)
-    | TmApp (s, t, t1) ->
-      TmApp (aux vl t1, aux vl t2)
-    | TmLetIn (s, t1, t2) ->
-      TmLetIn (s, aux vl t1, aux (s::vl) t2)
-    | TmFix t -> 
-      TmFix (aux vl t)
-  in
-    aux [] tm
-;;
-*)
 
 let apply_ctx ctx tm = 
   List.fold_left (fun t x -> subst x (getbinding ctx x) t) tm (free_vars tm)
@@ -467,4 +438,3 @@ let execute (vctx, tctx) = function
     print_endline (s ^ " : " ^ string_of_ty tyTm ^ " = " ^ string_of_term tm');
     (addbinding vctx s tm', addbinding tctx s tyTm)
 ;;
-

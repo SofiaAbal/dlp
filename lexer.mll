@@ -23,6 +23,11 @@ rule token = parse
   | "Nat"       { NAT }
   | '('         { LPAREN }
   | ')'         { RPAREN }
+  | '{'         { LCURLY }
+  | '}'         { RCURLY }
+  | ','         { COMMA }
+  | ".1"        { FSTPROJ }
+  | ".2"        { SNDPROJ }
   | '.'         { DOT }
   | '='         { EQ }
   | ':'         { COLON }
