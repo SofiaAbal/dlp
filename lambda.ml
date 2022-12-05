@@ -6,6 +6,7 @@ type ty =
   | TyNat
   | TyArr of ty * ty
   | TyPair of ty * ty
+  | TyString
 ;;
 
 type 'a context =
@@ -28,6 +29,8 @@ type term =
   | TmPair of term * term
   | TmPairFstProj of term
   | TmPairSndProj of term
+  | TmString of string
+  | TmConcat of term * term
 ;;
 
 type command = 
@@ -61,6 +64,8 @@ let rec string_of_ty ty = match ty with
       "(" ^ string_of_ty ty1 ^ ")" ^ " -> " ^ "(" ^ string_of_ty ty2 ^ ")"
   | TyPair (ty1, ty2) ->
       "(" ^ string_of_ty ty1 ^ ", " ^ string_of_ty ty2 ^ ")"
+  | TyString ->
+      "String"
 ;;
 
 exception Type_error of string
@@ -151,6 +156,16 @@ let rec typeof ctx tm = match tm with
     (* T-Proj2 *)
   | TmPairSndProj t2 -> 
       typeof ctx t2
+
+  (* T-String *)
+  | TmString _ ->
+      TyString
+
+    (* T-Concat *)
+  | TmConcat (t1, t2) ->
+      if typeof ctx t1 <> TyString then raise (Type_error "first argument of concat is not a string")
+      else if typeof ctx t2 <> TyString then raise (Type_error "second argument of concat is not a string")
+      else TyString
     
 ;;
 
@@ -194,6 +209,10 @@ let rec string_of_term = function
       string_of_term t1 ^ ".1"
   | TmPairSndProj t2 ->
       string_of_term t2 ^ ".2"
+  | TmString s ->
+        "\"" ^ s ^ "\""
+  | TmConcat (t1, t2) ->
+        string_of_term t1 ^ " ^ " ^ string_of_term t2
 ;;
 
 let rec ldif l1 l2 = match l1 with
@@ -237,6 +256,10 @@ let rec free_vars tm = match tm with
       free_vars t1
   | TmPairSndProj t2 ->
       free_vars t2
+  | TmString _ ->
+      []
+  | TmConcat (t1, t2) ->
+      lunion (free_vars t1) (free_vars t2)
 ;;
 
 let rec fresh_name x l =
@@ -284,6 +307,10 @@ let rec subst x s tm = match tm with
       TmPairFstProj (subst x s t1)
   | TmPairSndProj t2 ->
       TmPairSndProj (subst x s t2)
+  | TmString s ->
+      TmString s
+  | TmConcat (t1, t2) ->
+      TmConcat (subst x s t1, subst x s t2)
 ;;
 
 let rec isnumericval tm = match tm with
@@ -298,6 +325,7 @@ let rec isval tm = match tm with
   | TmAbs _ -> true
   | t when isnumericval t -> true
   | TmPair (a, b) when ((isval a) && (isval b)) -> true
+  | TmString _ -> true
   | _ -> false
 ;;
 
@@ -409,6 +437,18 @@ let rec eval1 vctx tm = match tm with
     (* E-Pair1 *)
   | TmPair (t1, t2) ->
       TmPair (eval1 vctx t1, t2)
+
+    (* E-Concat *)
+  | TmConcat (TmString s1, TmString s2) ->
+      TmString (s1 ^ s2)
+
+  | TmConcat (v1, t2) when isval v1 ->
+      let t2' = eval1 vctx t2 in
+      TmConcat (v1, t2')
+
+  | TmConcat (t1, t2) ->
+      let t1' = eval1 vctx t1 in
+      TmConcat(t1', t2)
 
   | _ ->
       raise NoRuleApplies

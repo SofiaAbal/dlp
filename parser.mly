@@ -17,6 +17,7 @@
 %token IN
 %token BOOL
 %token NAT
+%token STRING
 
 %token LPAREN
 %token RPAREN
@@ -30,7 +31,9 @@
 %token COLON
 %token ARROW
 %token EOF
+%token CONCAT
 
+%token <string> STRINGO
 %token <int> INTV
 %token <string> STRINGV
 
@@ -74,6 +77,8 @@ appTerm :
       { TmPairFstProj $1 }
   | appTerm SNDPROJ
       { TmPairSndProj $1 }
+   | atomicTerm CONCAT atomicTerm
+      { TmConcat ($1, $3) }
 
 
 atomicTerm :
@@ -83,6 +88,8 @@ atomicTerm :
       { TmTrue }
   | FALSE
       { TmFalse }
+  | STRINGO
+      { TmString $1 }
   | STRINGV
       { TmVar $1 }
   | INTV
@@ -104,3 +111,5 @@ atomicTy :
       { TyBool }
   | NAT
       { TyNat }
+  | STRING
+      { TyString }

@@ -4,6 +4,7 @@ type ty =
   | TyNat
   | TyArr of ty * ty
   | TyPair of ty * ty
+  | TyString
 ;;
 
 type 'a context =
@@ -26,6 +27,8 @@ type term =
   | TmPair of term * term
   | TmPairFstProj of term
   | TmPairSndProj of term
+  | TmString of string
+  | TmConcat of term * term
 ;;
 
 type command =

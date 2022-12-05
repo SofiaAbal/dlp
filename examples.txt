@@ -17,3 +17,18 @@ fact = letrec fact : Nat -> Nat =
 lambda n : Nat. if iszero n then 1 else prod n (fact (pred n)) in
 fact
 ;;
+
+sum 24 35;;
+prod 4 4;;
+fib 10;;
+fact 5;;
+
+"Cad3n4";
+"cad3" ^ "n4";
+"" ^ ((Lx:String. x^"by") "ru");
+
+p = (2, true);;
+p2 = (false, p);;
+pair = (p, p2);;
+pair.1;;
+pair.2;;
