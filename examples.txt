@@ -32,3 +32,43 @@ p2 = (false, p);;
 pair = (p, p2);;
 pair.1;;
 pair.2;;
+
+nil[Nat];
+cons[Nat] 10 (nil[Nat]);
+empty_list = nil[Nat];
+list1 = cons[Nat] 11 (cons[Nat] 77 (cons[Nat] 6 (nil[Nat])));
+isnil[Nat] empty_list;
+isnil[Nat] list1;
+head[Nat] list1;
+tail[Nat] list1;
+
+len = letrec len : (Nat list) -> Nat = lambda l : Nat list. if (isnil[Nat] l) then 0 else (succ (len (tail[Nat] l)))
+in len;
+len empty_list;
+len list1;
+
+list2 = cons[Nat] 32 (cons[Nat] 9 (cons[Nat] 16 (cons[Nat] 5 (nil[Nat]))));
+
+append = letrec append : (Nat list) -> (Nat list) -> Nat list = lambda ap1: Nat list. lambda ap2: Nat list.
+if (isnil[Nat] ap1) then
+	ap2
+else
+	append (tail[Nat] ap1) (cons[Nat] (head[Nat] ap1) ap2) 
+in append; 
+
+list_fib = cons[Nat] 4 (cons[Nat] 3 (cons[Nat] 10 (cons[Nat] 5 (nil[Nat]))));
+
+(* first define sum and fib *)
+func = lambda x:Nat. fib x;
+
+map = letrec map : (Nat list) -> (Nat -> Nat) -> Nat list =
+lambda lst: Nat list. lambda f: (Nat -> Nat). 
+        if (isnil[Nat] (tail[Nat] lst)) then
+                cons[Nat] (f (head[Nat] lst)) (nil[Nat])
+        else
+                cons[Nat] (f (head[Nat] lst)) (map (tail[Nat] lst) f)
+in map;
+map list_fib func;
+
+();
+unit;
