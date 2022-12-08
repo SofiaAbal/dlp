@@ -18,6 +18,9 @@
 %token BOOL
 %token NAT
 %token STRING
+%token UNIT
+%token UNITV
+%token LIST
 
 %token LPAREN
 %token RPAREN
@@ -32,6 +35,13 @@
 %token ARROW
 %token EOF
 %token CONCAT
+%token RSQUARE
+%token LSQUARE
+%token NIL
+%token CONS
+%token ISNIL
+%token HEAD
+%token TAIL
 
 %token <string> STRINGO
 %token <int> INTV
@@ -77,8 +87,20 @@ appTerm :
       { TmPairFstProj $1 }
   | appTerm SNDPROJ
       { TmPairSndProj $1 }
-   | atomicTerm CONCAT atomicTerm
+  | atomicTerm CONCAT atomicTerm
       { TmConcat ($1, $3) }
+  | NIL LSQUARE ty RSQUARE
+      { TmNil $3 }
+  | CONS LSQUARE ty RSQUARE atomicTerm atomicTerm
+      { TmCons ($3, $5, $6) }
+  | ISNIL LSQUARE ty RSQUARE atomicTerm
+      { TmIsNil ($3, $5)}
+  | HEAD LSQUARE ty RSQUARE atomicTerm
+      { TmHead ($3, $5)}
+  | TAIL LSQUARE ty RSQUARE atomicTerm
+      { TmTail ($3, $5)}
+
+    
 
 
 atomicTerm :
@@ -90,6 +112,8 @@ atomicTerm :
       { TmFalse }
   | STRINGO
       { TmString $1 }
+  | UNITV
+      { TmUnit }
   | STRINGV
       { TmVar $1 }
   | INTV
@@ -103,6 +127,9 @@ ty :
       { $1 }
   | atomicTy ARROW ty
       { TyArr ($1, $3) }
+  | atomicTy LIST
+      { TyList $1 }
+
 
 atomicTy :
     LPAREN ty RPAREN  
@@ -113,3 +140,5 @@ atomicTy :
       { TyNat }
   | STRING
       { TyString }
+  | UNIT
+      { TyUnit }
