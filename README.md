@@ -9,55 +9,54 @@ For this exercise, only the file _main.ml_ was modified, because we decided to d
 
 ### Internal fixed point combiner
 
-'''
+```
 >> sum = letrec sum : Nat -> Nat -> Nat =
 lambda n : Nat. lambda m : Nat. if iszero n then m else succ (sum (pred n) m) in
 sum
 ;;
 >> sum 21 34;;
 - : Nat = 55
-'''
+```
 
 ### Global definitions context
-
-'''
+```
 >> x = true;;
 >> id = lambda x : Bool. x;;
 >> id x;;
-'''
+```
 
 ### String type
 
-'''
+```
 "Cad3n4";
 "cad3" ^ "n4";
 "" ^ ((Lx:String. x^"by") "ru");;
-'''
+```
 
 ### Pairs type
 
-'''
+```
 >> p = (2, true);;
 >> p2 = (false, p);;
 >> pair = (p, p2);;
 >> first pair;;
 >> second pair;;
-'''
+```
 
 ### Tuples type
 
-'''
+```
 tuple = {pair, 2, 3};;
 tuple.1;;
 first (tuple.1);;
-'''
+```
 
 ### Records type
 
-'''
+```
 record = {a = {a = 1, b = 2}, b = tuple};;
 record.a;;
 (record.a).b;;
 record.b;;
 {};;
-'''
+```
