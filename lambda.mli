@@ -5,6 +5,10 @@ type ty =
   | TyArr of ty * ty
   | TyPair of ty * ty
   | TyString
+  | TyUnit
+  | TyList of ty
+  | TyTuple of ty list
+  | TyRecord of (string * ty) list
 ;;
 
 type 'a context =
@@ -29,6 +33,15 @@ type term =
   | TmPairSndProj of term
   | TmString of string
   | TmConcat of term * term
+  | TmNil of ty
+  | TmCons of ty * term * term
+  | TmIsNil of ty * term
+  | TmHead of ty * term
+  | TmTail of ty * term  
+  | TmUnit
+  | TmTuple of term list
+  | TmRecord of (string * term) list
+  | TmProj of term * string
 ;;
 
 type command =
