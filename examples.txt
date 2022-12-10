@@ -56,6 +56,8 @@ else
 	append (tail[Nat] ap1) (cons[Nat] (head[Nat] ap1) ap2) 
 in append; 
 
+append (append list1 (nil[Nat])) list2;
+
 list_fib = cons[Nat] 4 (cons[Nat] 3 (cons[Nat] 10 (cons[Nat] 5 (nil[Nat]))));
 
 (* first define sum and fib *)
