@@ -99,14 +99,14 @@ appTerm :
       { TmHead ($3, $5)}
   | TAIL LSQUARE ty RSQUARE atomicTerm
       { TmTail ($3, $5)}
-  | atomicTerm DOT STRINGV
+  | pathTerm DOT STRINGV
       { TmProj ($1, $3) }
 
     
 pathTerm :
   pathTerm DOT STRINGV
     { TmProj ($1, $3) }
-  | pathTerm DOT INTV /* En las tuplas debería entrar por aquí, pero no lo pilla */
+  | pathTerm DOT INTV 
     { TmProj ($1, string_of_int $3) }
   | atomicTerm
     { $1 }

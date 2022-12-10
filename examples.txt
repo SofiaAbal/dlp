@@ -74,8 +74,12 @@ map list_fib func;
 unit;
 
 
-r = {a = {a = 1, b = 2}, b = false};;
-r.a;;
-(r.a).b;;
-r.b;;
+tuple = {pair, 2, 3};;
+tuple.1;;
+first (tuple.1);;
+
+record = {a = {a = 1, b = 2}, b = tuple};;
+record.a;;
+(record.a).b;;
+record.b;;
 {};;
