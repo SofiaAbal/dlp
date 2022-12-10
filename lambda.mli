@@ -7,6 +7,8 @@ type ty =
   | TyString
   | TyUnit
   | TyList of ty
+  | TyTuple of ty list
+  | TyRecord of (string * ty) list
 ;;
 
 type 'a context =
@@ -37,6 +39,9 @@ type term =
   | TmHead of ty * term
   | TmTail of ty * term  
   | TmUnit
+  | TmTuple of term list
+  | TmRecord of (string * term) list
+  | TmProj of term * string
 ;;
 
 type command =

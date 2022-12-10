@@ -31,8 +31,8 @@ rule token = parse
   | '{'         { LCURLY }
   | '}'         { RCURLY }
   | ','         { COMMA }
-  | ".1"        { FSTPROJ }
-  | ".2"        { SNDPROJ }
+  | "first"     { FSTPROJ }
+  | "second"    { SNDPROJ }
   | '.'         { DOT }
   | '='         { EQ }
   | ':'         { COLON }
