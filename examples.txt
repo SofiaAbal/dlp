@@ -23,9 +23,9 @@ prod 4 4;;
 fib 10;;
 fact 5;;
 
-"Cad3n4";
-"cad3" ^ "n4";
-"" ^ ((Lx:String. x^"by") "ru");
+"Cad3n4";;
+"cad3" ^ "n4";;
+"" ^ ((Lx:String. x^"by") "ru");;
 
 p = {2, true};;
 p2 = {false, p};;
@@ -34,20 +34,20 @@ first pair;;
 second pair;;
 
 nil[Nat];
-cons[Nat] 10 (nil[Nat]);
-empty_list = nil[Nat];
-list1 = cons[Nat] 11 (cons[Nat] 77 (cons[Nat] 6 (nil[Nat])));
-isnil[Nat] empty_list;
-isnil[Nat] list1;
-head[Nat] list1;
-tail[Nat] list1;
+cons[Nat] 10 (nil[Nat]);;
+empty_list = nil[Nat];;
+list1 = cons[Nat] 11 (cons[Nat] 77 (cons[Nat] 6 (nil[Nat])));;
+isnil[Nat] empty_list;;
+isnil[Nat] list1;;
+head[Nat] list1;;
+tail[Nat] list1;;
 
 len = letrec len : (Nat list) -> Nat = lambda l : Nat list. if (isnil[Nat] l) then 0 else (succ (len (tail[Nat] l)))
-in len;
-len empty_list;
-len list1;
+in len;;
+len empty_list;;
+len list1;;
 
-list2 = cons[Nat] 32 (cons[Nat] 9 (cons[Nat] 16 (cons[Nat] 5 (nil[Nat]))));
+list2 = cons[Nat] 32 (cons[Nat] 9 (cons[Nat] 16 (cons[Nat] 5 (nil[Nat]))));;
 
 
 
@@ -59,14 +59,14 @@ append = letrec append : (Nat list) -> (Nat list) -> Nat list = lambda ap1: Nat 
 			cons[Nat] (head[Nat] ap1) ap2
 		else
 			cons[Nat] (head[Nat] ap1) (append (tail[Nat] ap1) ap2) 
-in append; 
+in append;;
 
-append list1 list2;
+append list1 list2;;
 
-list_fib = cons[Nat] 4 (cons[Nat] 3 (cons[Nat] 10 (cons[Nat] 5 (nil[Nat]))));
+list_fib = cons[Nat] 4 (cons[Nat] 3 (cons[Nat] 10 (cons[Nat] 5 (nil[Nat]))));;
 
 (* first define sum and fib *)
-func = lambda x:Nat. fib x;
+func = lambda x:Nat. fib x;;
 
 map = letrec map : (Nat list) -> (Nat -> Nat) -> Nat list =
 lambda lst: Nat list. lambda f: (Nat -> Nat). 
@@ -74,11 +74,11 @@ lambda lst: Nat list. lambda f: (Nat -> Nat).
                 cons[Nat] (f (head[Nat] lst)) (nil[Nat])
         else
                 cons[Nat] (f (head[Nat] lst)) (map (tail[Nat] lst) f)
-in map;
-map list_fib func;
+in map;;
+map list_fib func;;
 
-();
-unit;
+();;
+unit;;
 
 
 tuple = {pair, 2, 3};;

@@ -84,7 +84,12 @@ To to run it alongside a file:
 ./top < examples.txt
 ```
 
-To clean up after execution:
+To clean up after execution, keeping the executable top:
 ```
 make clean
+```
+
+To clean up everything:
+```
+make cleanall
 ```

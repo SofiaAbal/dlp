@@ -6,10 +6,19 @@ open Parser;;
 open Lexer;;
 open String;;
 
+let contains_string s1 s2 =
+  try
+    let len = String.length s2 in
+    for i = 0 to String.length s1 - len do
+      if String.sub s1 i len = s2 then raise Exit
+    done;
+    false
+  with Exit -> true
+;;
 
 let rec read_multi_lines () =
   let line = trim(read_line()) in
-    if (contains line ';' && length line > 0) then sub line 0 (index line ';') (* we ignore everything from ';' *)
+    if (contains_string line ";;" && length line > 0) then sub line 0 (index line ';')
     else line ^ " " ^ (read_multi_lines ())
 ;;
 
