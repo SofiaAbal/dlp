@@ -35,9 +35,9 @@ sum
 A pair consists of two elements between curly brackets, and we can access both those elements thanks to having added two new tokens "first" and "second" that go before the pair. We decided to follow this notation and not the one with the tokens ".1" and ".2" after the pair, because we also wanted to implement tuples, so this way we can easily differenciate each function.
 
 ```
->> p = (2, true);;
->> p2 = (false, p);;
->> pair = (p, p2);;
+>> p = {2, true};;
+>> p2 = {false, p};;
+>> pair = {p, p2};;
 >> first pair;;
 >> second pair;;
 ```
