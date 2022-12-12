@@ -49,12 +49,19 @@ len list1;
 
 list2 = cons[Nat] 32 (cons[Nat] 9 (cons[Nat] 16 (cons[Nat] 5 (nil[Nat]))));
 
+
+
 append = letrec append : (Nat list) -> (Nat list) -> Nat list = lambda ap1: Nat list. lambda ap2: Nat list.
-if (isnil[Nat] ap1) then
-	ap2
-else
-	append (tail[Nat] ap1) (cons[Nat] (head[Nat] ap1) ap2) 
+	if (isnil[Nat] ap1) then
+		ap2
+	else
+		if (isnil[Nat] (tail[Nat] ap1)) then	
+			cons[Nat] (head[Nat] ap1) ap2
+		else
+			cons[Nat] (head[Nat] ap1) (append (tail[Nat] ap1) ap2) 
 in append; 
+
+append list1 list2;
 
 list_fib = cons[Nat] 4 (cons[Nat] 3 (cons[Nat] 10 (cons[Nat] 5 (nil[Nat]))));
 
