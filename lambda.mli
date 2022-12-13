@@ -6,7 +6,6 @@ type ty =
   | TyPair of ty * ty
   | TyString
   | TyUnit
-  | TyUnitDer of ty * ty
   | TyList of ty
   | TyTuple of ty list
   | TyRecord of (string * ty) list
@@ -40,7 +39,6 @@ type term =
   | TmHead of ty * term
   | TmTail of ty * term  
   | TmUnit
-  | TmUnitDer of term * term
   | TmTuple of term list
   | TmRecord of (string * term) list
   | TmProj of term * string

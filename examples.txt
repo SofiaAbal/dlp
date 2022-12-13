@@ -9,7 +9,7 @@ prod
 ;;
 
 fib = letrec fib : Nat -> Nat = 
-lambda n : Nat. if iszero n then 1 else if iszero (pred n) then 1 else sum (fib (pred (pred n))) (fib (pred n)) in
+lambda n : Nat. if iszero n then 0 else if iszero (pred n) then 1 else sum (fib (pred (pred n))) (fib (pred n)) in
 fib
 ;;
 

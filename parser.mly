@@ -54,10 +54,19 @@
 %%
 
 s :
-    STRINGV EQ term EOF
+    termSeq EOF
+      { Eval $1 }
+    | STRINGV EQ term EOF
       { Bind ($1, $3) }
     | term EOF
       { Eval $1 }
+
+termSeq:
+  term
+    { $1 }
+  | term SEMICOLON termSeq
+    {TmApp (TmAbs( _ , $1, ), $3)}
+
 
 term :
     appTerm
@@ -102,8 +111,8 @@ appTerm :
       { TmTail ($3, $5)}
   | pathTerm DOT STRINGV
       { TmProj ($1, $3) }
-  | term SEMICOLON term
-      { TmUnitDer ($1, $3) }
+  | appTerm SEMICOLON appTerm
+      { TmApp ($1, $3) }
 
     
 pathTerm :
