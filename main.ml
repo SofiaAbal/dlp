@@ -16,9 +16,10 @@ let contains_string s1 s2 =
   with Exit -> true
 ;;
 
+
 let rec read_multi_lines () =
   let line = trim(read_line()) in
-    if (contains_string line ";;" && length line > 0) then sub line 0 (index line ';')
+    if (contains_string line ";;" && length line > 0) then sub line 0 ((String.length line) - 2)
     else line ^ " " ^ (read_multi_lines ())
 ;;
 

@@ -8,6 +8,7 @@ type ty =
   | TyPair of ty * ty
   | TyString
   | TyUnit
+  | TyUnitDer of ty * ty
   | TyList of ty
   | TyTuple of ty list
   | TyRecord of (string * ty) list
@@ -41,6 +42,7 @@ type term =
   | TmHead of ty * term
   | TmTail of ty * term
   | TmUnit
+  | TmUnitDer of term * term
   | TmTuple of term list
   | TmRecord of (string * term) list
   | TmProj of term * string
@@ -81,6 +83,8 @@ let rec string_of_ty ty = match ty with
       "String"
   | TyUnit ->
       "Unit"
+  | TyUnitDer (ty1, ty2) ->
+      "both :\n" ^ string_of_ty ty1 ^ "\n" ^ string_of_ty ty2 
   | TyList ty ->
       string_of_ty ty ^ " List"
   | TyTuple l ->
@@ -198,6 +202,9 @@ let rec typeof ctx tm = match tm with
       (* T-Unit *)
   | TmUnit ->
       TyUnit
+
+  | TmUnitDer (t1, t2) -> 
+      TyUnitDer(typeof ctx t1, typeof ctx t2)
    
       (* T-Nil *)
   | TmNil ty -> TyList ty
@@ -291,6 +298,8 @@ let rec string_of_term = function
         string_of_term t1 ^ " ^ " ^ string_of_term t2
   | TmUnit ->
       "()"
+  | TmUnitDer (t1, t2) ->
+      string_of_term t1 ^ "\n" ^ string_of_term t2
   | TmNil ty ->
     "nil[" ^ string_of_ty ty ^ "]"
   | TmCons (ty,h,t) ->
@@ -362,6 +371,8 @@ let rec free_vars tm = match tm with
       lunion (free_vars t1) (free_vars t2)
   | TmUnit ->
       []
+  | TmUnitDer (t1, t2) -> 
+      lunion (free_vars t1) (free_vars t2)
   | TmNil ty -> 
         []
   | TmCons (ty,t1,t2) -> 
@@ -432,6 +443,8 @@ let rec subst x s tm = match tm with
       TmConcat (subst x s t1, subst x s t2)
   | TmUnit ->
     TmUnit
+  | TmUnitDer (t1, t2) ->
+      TmUnitDer (subst x s t1, subst x s t2)
   | TmNil ty -> 
       tm
   | TmCons (ty,t1,t2) -> 
@@ -465,6 +478,7 @@ let rec isval tm = match tm with
   | TmPair (a, b) when ((isval a) && (isval b)) -> true
   | TmString _ -> true
   | TmUnit -> true
+  | TmUnitDer (a, b) when ((isval a) && (isval b)) -> true
   | TmNil _ -> true
   | TmTuple fields -> List.for_all (fun ti -> isval ti) fields
   | TmRecord fields ->
@@ -667,6 +681,11 @@ let rec eval1 vctx tm = match tm with
   | TmProj (t1, lb) -> 
     let t1' = eval1 vctx t1 in 
     TmProj (t1', lb)
+
+
+  (* New derived form *)
+  | TmUnitDer (t1, t2) when isval t1 ->
+      TmUnitDer (eval1 vctx t1, eval1 vctx t2)
 
   | _ ->
       raise NoRuleApplies

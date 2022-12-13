@@ -32,6 +32,7 @@
 %token DOT
 %token EQ
 %token COLON
+%token SEMICOLON
 %token ARROW
 %token EOF
 %token CONCAT
@@ -101,6 +102,8 @@ appTerm :
       { TmTail ($3, $5)}
   | pathTerm DOT STRINGV
       { TmProj ($1, $3) }
+  | term SEMICOLON term
+      { TmUnitDer ($1, $3) }
 
     
 pathTerm :
