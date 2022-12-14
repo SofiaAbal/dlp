@@ -19,7 +19,7 @@ sum
 
 ### prod, fib and fact examples
 
-PROD
+PROD:
 Product of two natural numbers
 
 ```
@@ -30,7 +30,7 @@ prod
 >> prod 21 34;;
 ```
 
-FIB
+FIB:
 n-term of the Fibonacci series
 
 ```
@@ -42,7 +42,7 @@ fib
 >> fib 10;;
 ```
 
-FACT
+FACT:
 Factorial
 
 ```
@@ -121,7 +121,7 @@ Our interpreter can make use of the list type, the lists have the form -> cons[T
 
 #### length, append and map examples
 
-LENGTH
+LENGTH:
 Returns the number of elements in a list.
 
 ```
@@ -131,7 +131,7 @@ in len;;
 >> len list1;;
 ```
 
-APPEND
+APPEND:
 Concatenates two lists.
 
 ```
@@ -151,7 +151,7 @@ in append;;
 >> append list1 list2;;
 ```
 
-MAP
+MAP:
 Applies a function to each item in a list.
 
 ```
@@ -169,7 +169,7 @@ in map;;
 >> map list_fib func;;
 ```
 
-#### Unit Type
+### Unit Type
 Type indicating the absence of a specific value.
 
 ```
