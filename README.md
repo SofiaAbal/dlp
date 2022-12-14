@@ -1,5 +1,6 @@
 # Lambda Calculus Interpreter
 This is the first [lab practice](P1_DLP_Q7_2022_23.pdf) for the college course of DLP, which consists of the implementation of a Lambda Calculus interpreter, following the rules [here](summary_of_rules.pdf) explained.
+By Sofía Abal Freire and Alejandro Rivera García 
 
 ## Technical manual
 In this paragraph we will show how to use all the functions implemented for each exercise. All the examples shown next (and more), can be found in the _examples.txt_ file.
