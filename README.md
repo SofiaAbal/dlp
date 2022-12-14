@@ -6,7 +6,7 @@ By Sofía Abal Freire and Alejandro Rivera García
 In this paragraph we will show how to use all the functions implemented for each exercise. All the examples shown next (and more), can be found in the _examples.txt_ file.
 
 ### Multi-line expressions
-For this exercise, only the file _main.ml_ was modified, because we decided to directly manipulate the string the user writes. For this, we created a new function called _read\_multi\_lines_, which retrieves every line the user writes on the interpreter, trims and processes it, so if reads a non empty line that doesn't finish with ";" (no need for ";;", it will stop with just one semicolon), it will concat it to a new instruction string. Then, we call this new function from the _top\_level\_loop_ function. This way, a multi-line expression is allowed.
+For this exercise, only the file _main.ml_ was modified, because we decided to directly manipulate the string the user writes. For this, we created a new function called _read\_multi\_lines_, which retrieves every line the user writes on the interpreter, trims and processes it, so if reads a non empty line that doesn't finish with ";;", it will concat it to a new instruction string. Then, we call this new function from the _top\_level\_loop_ function. This way, a multi-line expression is allowed.
 
 ### Internal fixed point combiner
 
@@ -120,7 +120,7 @@ Our interpreter can make use of the list type, the lists have the form -> cons[T
 >> tail[Nat] list1;;
 ```
 
-#### length, append and map examples
+#### Length, append and map examples
 
 LENGTH:
 Returns the number of elements in a list.
